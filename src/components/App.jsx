@@ -1,48 +1,43 @@
-import { useState, useEffect } from 'react';
 import { nanoid } from 'nanoid';
 import { FormContacts } from './Formcontacts/Formcontacts';
 import { ListContacts } from './Listcontacts/Listcontacts';
 import { Filter } from './Filter/Filter';
+import { useDispatch, useSelector } from 'react-redux';
+import { addContact, changeFilter, deleteContact } from 'redux/phonebook/reducer';
 
 export const App = () => {
-  const [filter, setFilter] = useState('');
-  const [contacts, setContacts] = useState(
-    () => JSON.parse(localStorage.getItem('key')) ?? []
-  );
+  const contacts = useSelector(state => state.phonebook.contacts);
+  const filter = useSelector(state => state.phonebook.filter);
 
-  useEffect(() => {
-    const stringifiedContacts = JSON.stringify(contacts);
-    localStorage.setItem('key', stringifiedContacts);
-  }, [contacts]);
+  const dispatch = useDispatch();
 
   const handleAddContact = data => {
-    const { name } = data;
-
+    const { name, number } = data;
     if (
       contacts.find(
-        contact => contact.name === name
+        contact => contact.name === name && contact.number === number
       )
     ) {
       alert(`${name} is already in contacts.`);
       return;
     }
-
-    setContacts(prevContacts => 
-      [...prevContacts, { ...data, id: nanoid() }],
+    dispatch(
+      addContact({
+        id: nanoid(),
+        name,
+        number,
+      })
     );
   };
 
   const handleFilterChange = event => {
     const inputFilter = event.target.value;
-    setFilter(inputFilter);
+    dispatch(changeFilter(inputFilter));
   };
 
-  const deleteContact = contactId => {
-    setContacts(prevContacts => 
-      prevContacts.filter(contact => contact.id !== contactId),
-    );
+  const btnDeleteContact = contactId => {
+    dispatch(deleteContact(contactId));
   };
-
 
   const filterContacts = contacts.filter(contact => {
     return (
@@ -50,6 +45,7 @@ export const App = () => {
       contact.number.includes(filter)
     );
   });
+
   return (
     <div
       style={{
@@ -64,10 +60,7 @@ export const App = () => {
       <FormContacts handleAddContact={handleAddContact} />
       <h2>Contacts</h2>
       <Filter onChange={handleFilterChange} filter={filter} />
-      <ListContacts
-        contacts={filterContacts}
-        deleteContact={deleteContact}
-      />
+      <ListContacts contacts={filterContacts} deleteContact={btnDeleteContact} />
     </div>
   );
 };

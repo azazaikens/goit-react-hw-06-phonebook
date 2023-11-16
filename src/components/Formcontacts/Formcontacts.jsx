@@ -22,11 +22,20 @@ export function FormContacts({ handleAddContact }) {
       style={{
         display: 'flex',
         flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
         gap: '20px',
       }}
       onSubmit={handleSubmit}
     >
-      <label htmlFor="name">
+      <label
+        style={{
+          display: 'flex',
+          justifyContent: 'flex-start',
+          gap: '20px',
+        }}
+        htmlFor="name"
+      >
         Name:
         <input
           type="text"
@@ -36,7 +45,13 @@ export function FormContacts({ handleAddContact }) {
           value={formData.name}
         />
       </label>
-      <label htmlFor="number">
+      <label
+        style={{
+          display: 'flex',
+          gap: '20px',
+        }}
+        htmlFor="number"
+      >
         Number:
         <input
           type="tel"
